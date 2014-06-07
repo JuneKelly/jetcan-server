@@ -58,10 +58,8 @@
 
 
 (defn token-valid? [decoded-token]
-  (let [exp-int (get-in decoded-token [:claims :exp])
-        exp (from-long (* 1000 exp-int))
-        nbf-int (get-in decoded-token [:claims :nbf])
-        nbf (from-long (* 1000 nbf-int))
+  (let [exp (from-long (* 1000 (get-in decoded-token [:claims :exp])))
+        nbf (from-long (* 1000 (get-in decoded-token [:claims :nbf])))
         current-time (now)]
     (and (not (before? exp current-time))
          (not (after? nbf current-time))
