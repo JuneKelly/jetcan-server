@@ -1,6 +1,7 @@
 (ns jetcan-server.handler
   (:require [compojure.core :refer [defroutes]]
             [jetcan-server.routes.core  :refer [api-routes home-routes]]
+            [jetcan-server.db.user :as user]
             [noir.util.middleware :as middleware]
             [compojure.route :as route]
             [taoensso.timbre :as timbre]
@@ -14,12 +15,24 @@
   (route/not-found "Not Found"))
 
 
+(defn- create-default-user
+  "Create a default admin user, to bootstrap the service"
+  []
+  (if (not (user/exists? "admin@jetcan-server"))
+    (do
+      (timbre/info "Setting up default user account admin:password")
+      (user/create! "admin@jetcan-server"
+                    "password"
+                    "Admin"))))
+
+
 (defn init
   "init will be called once when
    app is deployed as a servlet on
    an app server such as Tomcat
    put any initialization code here"
   []
+  (create-default-user)
   (timbre/set-config!
     [:appenders :rotor]
     {:min-level :info
