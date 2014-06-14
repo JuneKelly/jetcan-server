@@ -11,7 +11,7 @@ VALUES (
 
 -- name: -get-user-profile
 -- Gets profile fields for a single user by email id
-SELECT id AS email, name, created FROM user_account
+SELECT id AS email, name, created, admin FROM user_account
 WHERE id = :email;
 
 

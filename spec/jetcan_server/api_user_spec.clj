@@ -35,6 +35,8 @@
       (let [profile (response-json :userProfile)]
         (should (= "qwer@example.com" (profile :email)))
         (should (= "Qwer" (profile :name)))
+        (should-contain :admin profile)
+        (should= false (profile :admin))
         (should (contains? profile :created))
         (should (string? (profile :created))))))
 
@@ -157,10 +159,11 @@
             profile (parse-string (response :body) true)]
         (should= 200 (response :status))
         (should (map? profile))
-        (should== [:email :name :created] (keys profile))
+        (should== [:email :name :created :admin] (keys profile))
         (should= "userone@example.com" (profile :email))
         (should= "User One" (profile :name))
-        (should-be string? (profile :created)))))
+        (should-be string? (profile :created))
+        (should= false (profile :admin)))))
 
 
 (describe
