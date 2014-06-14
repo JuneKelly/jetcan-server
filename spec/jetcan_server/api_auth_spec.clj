@@ -31,7 +31,9 @@
       (should (contains? response-json :token))
       (should (string? (response-json :token)))
       (should (< 0 (count (response-json :token))))
-      (should (= "userone@example.com" (response-json :email)))))
+      (should-contain :profile response-json)
+      (should (= "userone@example.com"
+                 (get-in response-json [:profile :email])))))
 
   (it "should fail to authenticate when email is unknown"
     (let [request-body

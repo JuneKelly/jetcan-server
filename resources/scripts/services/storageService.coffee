@@ -3,11 +3,22 @@ angular.module('jetcanApp')
 
     store = localStorage
 
-    getUserEmail = () ->
-      store['jetcan_user']
+    getProfile = ->
+      profile = store['jetcan_user_profile']
+      if profile == ''
+        return null
+      else
+        return angular.fromJson(profile)
 
-    setUserEmail = (email) ->
-      store['jetcan_user'] = email
+    getUserEmail = () ->
+      user = getProfile()
+      if user
+        user.email
+      else
+        ''
+
+    setProfile = (profile) ->
+      store['jetcan_user_profile'] = angular.toJson(profile)
 
     getToken = () ->
       store['jetcan_token']
@@ -16,8 +27,9 @@ angular.module('jetcanApp')
       store['jetcan_token'] = token
 
     return {
+      getProfile: getProfile
+      setProfile: setProfile
       getUserEmail: getUserEmail
-      setUserEmail: setUserEmail
       getToken: getToken
       setToken: setToken
     }

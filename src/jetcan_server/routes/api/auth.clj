@@ -2,8 +2,10 @@
   (:use compojure.core)
   (:require [liberator.core :refer [defresource]]
             [noir.validation :as v]
+            [cheshire.core :as json]
             [jetcan-server.auth :as auth]
             [jetcan-server.db.log :as log]
+            [jetcan-server.db.user :as user]
             [jetcan-server.validation :refer [auth-errors]]
             [jetcan-server.util :refer [ensure-json rep-map]]))
 
@@ -29,10 +31,11 @@
     (let [params (get-in context [:request :params])
           email (params :email)
           password (params :password)
-          token (auth/authenticate-user email password)]
+          token (auth/authenticate-user email password)
+          profile (user/get-profile email)]
       (if (not (nil? token))
         [true, {:payload
-                {:email email, :token token}}]
+                {:profile profile, :token token}}]
         false)))
 
   :post!
@@ -43,4 +46,4 @@
     (do
       (log/info {:event "user:authenticated"
                  :user (get-in context [:payload :email])})
-      (context :payload))))
+      (json/generate-string (context :payload)))))

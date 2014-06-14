@@ -2,7 +2,7 @@ angular.module('jetcanApp')
   .service 'Auth', ($http, Notifications, Util, $state, Storage) ->
 
     reset = () ->
-      Storage.setUserEmail('')
+      Storage.setProfile({})
       Storage.setToken('')
       Notifications.resetAll()
       Util.kickToRoot()
@@ -40,10 +40,10 @@ angular.module('jetcanApp')
             )
           else
             if status == 201
+              Storage.setProfile(payload.profile)
               Storage.setToken(payload.token)
-              Storage.setUserEmail(payload.email)
               Notifications.success(
-                'Logged in as ' + Storage.getUserEmail())
+                'Logged in as ' + payload.profile.email)
             else
               Notifications.error(
                 'Error, authentication failed'
