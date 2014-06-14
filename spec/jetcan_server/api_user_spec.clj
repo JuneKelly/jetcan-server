@@ -15,7 +15,8 @@
    (do (util/reset-db!)
        (util/populate-users!)))
 
-  (it "should allow a user to be created when params are correct"
+  (it "should allow a user to be created when params are correct,
+       and current user is admin"
     (let [request-body
           "{\"email\":\"qwer@example.com\",
             \"password\":\"password3\",
@@ -24,21 +25,45 @@
                       (content-type "application/json")
                       (request "/api/user"
                                :request-method :post
-                               :body request-body))
+                               :body request-body
+                               :headers {:auth_token
+                                         util/user-one-token}))
           response (:response request)
           response-json (parse-string (response :body) true)]
       (should (= "application/json;charset=UTF-8"
                  (get (:headers response) "Content-Type")))
-      (should (= (:status response) 201))
+      (should (= (:status response)
+                 201))
       (should (contains? response-json :userProfile))
       (should (map? (response-json :userProfile)))
       (let [profile (response-json :userProfile)]
-        (should (= "qwer@example.com" (profile :email)))
-        (should (= "Qwer" (profile :name)))
+        (should (= "qwer@example.com"
+                   (profile :email)))
+        (should (= "Qwer"
+                   (profile :name)))
         (should-contain :admin profile)
-        (should= false (profile :admin))
+        (should= false
+                 (profile :admin))
         (should (contains? profile :created))
         (should (string? (profile :created))))))
+
+  (it "should fail when current user is not admin"
+    (let [request-body
+          "{\"email\":\"qwer@example.com\",
+            \"password\":\"password3\",
+            \"name\": \"Qwer\"}"
+          request (-> (session app)
+                      (content-type "application/json")
+                      (request "/api/user"
+                               :request-method :post
+                               :body request-body
+                               :headers {:auth_token ;; non-admin user
+                                         util/user-two-token}))
+          response (:response request)]
+      (should (= "text/plain"
+                 (get (:headers response) "Content-Type")))
+      (should (= (:status response) 401))
+      (should (= "Not authorized." (response :body)))))
 
   (it "should fail when email already exists"
     (let [request-body
@@ -49,7 +74,9 @@
                       (content-type "application/json")
                       (request "/api/user"
                                :request-method :post
-                               :body request-body))
+                               :body request-body
+                               :headers {:auth_token
+                                         util/user-one-token}))
           response (:response request)]
       (should (= "text/plain"
                  (get (:headers response) "Content-Type")))
@@ -65,7 +92,9 @@
                       (content-type "application/json")
                       (request "/api/user"
                                :request-method :post
-                               :body request-body))
+                               :body request-body
+                               :headers {:auth_token
+                                         util/user-one-token}))
           response (:response request)
           response-json (parse-string (response :body) true)]
       (should (= "application/json;charset=UTF-8"
@@ -82,7 +111,9 @@
                       (content-type "application/json")
                       (request "/api/user"
                                :request-method :post
-                               :body request-body))
+                               :body request-body
+                               :headers {:auth_token
+                                         util/user-one-token}))
           response (:response request)
           response-json (parse-string (response :body) true)]
       (should (= "application/json;charset=UTF-8"
@@ -99,7 +130,9 @@
                       (content-type "application/json")
                       (request "/api/user"
                                :request-method :post
-                               :body request-body))
+                               :body request-body
+                               :headers {:auth_token
+                                         util/user-one-token}))
           response (:response request)
           response-json (parse-string (response :body) true)]
       (should (= "application/json;charset=UTF-8"
@@ -116,7 +149,9 @@
                       (content-type "application/json")
                       (request "/api/user"
                                :request-method :post
-                               :body request-body))
+                               :body request-body
+                               :headers {:auth_token
+                                         util/user-one-token}))
           response (:response request)
           response-json (parse-string (response :body) true)]
       (should (= "application/json;charset=UTF-8"
@@ -163,7 +198,7 @@
         (should= "userone@example.com" (profile :email))
         (should= "User One" (profile :name))
         (should-be string? (profile :created))
-        (should= false (profile :admin)))))
+        (should= true (profile :admin)))))
 
 
 (describe

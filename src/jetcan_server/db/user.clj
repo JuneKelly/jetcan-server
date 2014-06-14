@@ -20,6 +20,25 @@
                        id
                        hash
                        name
+                       false
+                       (to-sql-time created))
+        true)
+      (catch Exception e
+        (do
+          (println e)
+          false)))))
+
+
+(defn create-admin! [id pass name]
+  (let [hash (crypt/encrypt pass)
+        created (util/datetime)]
+    (try
+      (do
+        (-create-user! db-spec
+                       id
+                       hash
+                       name
+                       true
                        (to-sql-time created))
         true)
       (catch Exception e
@@ -49,3 +68,9 @@
                        name
                        id)
         (get-profile id))))
+
+
+(defn is-admin? [id]
+  (let [profile (get-profile id)]
+    (= (profile :admin)
+       true)))

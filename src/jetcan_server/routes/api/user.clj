@@ -28,6 +28,13 @@
     can-access))
 
 
+(defn can-create-user?
+  "Check that a user account can be created"
+  [context]
+  (let [current-user (get-current-user context)]
+    (user/is-admin? current-user)))
+
+
 (defresource user-read [id]
   :available-media-types ["application/json"]
   :allowed-methods [:get]
@@ -98,6 +105,9 @@
 (defresource user-create
   :available-media-types ["application/json"]
   :allowed-methods [:post]
+
+  :authorized?
+  can-create-user?
 
   :malformed?
   (fn [context]

@@ -21,9 +21,9 @@
   (if (not (user/exists? "admin@jetcan-server"))
     (do
       (timbre/info "Setting up default user account admin:password")
-      (user/create! "admin@jetcan-server"
-                    "password"
-                    "Admin"))))
+      (user/create-admin! "admin@jetcan-server"
+                          "password"
+                          "Admin"))))
 
 
 (defn init

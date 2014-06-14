@@ -1,10 +1,11 @@
 -- name: -create-user!
 -- Make a new user
-INSERT INTO user_account (id, password, name, created)
+INSERT INTO user_account (id, password, name, admin, created)
 VALUES (
   :email,
   :password,
   :name,
+  :admin,
   :created
 );
 
