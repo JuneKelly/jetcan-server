@@ -8,15 +8,16 @@ angular.module('jetcanApp')
       Util.kickToRoot()
 
     register = (credentials) ->
-      reset()
       $http(
         method: 'POST'
         url: '/api/user'
         data: credentials
-        headers: { 'Accept': 'application/json' }
+        headers:
+          'Accept': 'application/json'
+          'auth_token': Storage.getToken()
       )
         .success (payload, status, headers, config) ->
-          login(credentials.email, credentials.password)
+          Notifications.success('Created user ' + credentials.email)
 
         .error (payload, status, headers, config) ->
           console.log 'ERROR'
@@ -66,6 +67,13 @@ angular.module('jetcanApp')
         Notifications.error('You must be logged in to do that')
         Util.kickToRoot()
 
+    mustBeAdmin = () ->
+      mustBeLoggedIn()
+      user = Storage.getProfile()
+      if user.admin != true
+        Notifications.error('You must be an admin user to do that')
+        Util.kickToRoot()
+
     loggedIn = () ->
       token = Storage.getToken()
       if token == '' or token == null or token == "null" or token == undefined
@@ -83,5 +91,6 @@ angular.module('jetcanApp')
       register: register
       loggedIn: loggedIn
       mustBeLoggedIn: mustBeLoggedIn
+      mustBeAdmin: mustBeAdmin
     }
 

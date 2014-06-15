@@ -16,6 +16,9 @@
       <div class="btn-group pull-right animate-show"
            ng-if="Auth.loggedIn()">
         <ul class="nav navbar-nav">
+          <li ng-if="Auth.isAdmin()">
+            <a ng-href="/#/register">Register</a>
+          </li>
           <li class="divider"></li>
           <li><a ng-href="/#/dashboard">Dashboard</a></li>
           <li class="divider"></li>
@@ -44,7 +47,6 @@
            ng-if="!Auth.loggedIn()">
         <ul class="nav navbar-nav col-sm-12">
           <li><a ng-href="/#/about">About</a></li>
-          <li><a ng-href="/#/register">Register</a></li>
           <li class="divider"></li>
           <li class="dropdown">
             <form class="navbar-form form-inline"
