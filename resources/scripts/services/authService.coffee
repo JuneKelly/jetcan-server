@@ -69,10 +69,12 @@ angular.module('jetcanApp')
 
     mustBeAdmin = () ->
       mustBeLoggedIn()
-      user = Storage.getProfile()
-      if user.admin != true
+      if !isAdmin()
         Notifications.error('You must be an admin user to do that')
         Util.kickToRoot()
+
+    isAdmin = () ->
+      Storage.getProfile().admin == true
 
     loggedIn = () ->
       token = Storage.getToken()
@@ -92,5 +94,6 @@ angular.module('jetcanApp')
       loggedIn: loggedIn
       mustBeLoggedIn: mustBeLoggedIn
       mustBeAdmin: mustBeAdmin
+      isAdmin: isAdmin
     }
 
