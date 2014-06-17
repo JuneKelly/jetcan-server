@@ -3,6 +3,9 @@
             [jetcan-server.db.user :as user]
             [jetcan-server.auth :as auth]
             [jetcan-server.db.snippet :as snippet]
+            [peridot.core :refer :all]
+            [jetcan-server.handler :as server]
+            [cheshire.core :as json]
             [yesql.core :refer [defquery]]))
 
 
@@ -63,3 +66,14 @@
   "uY29tIiwibmFtZSI6Ik5vdCBBIFVzZXIiLCJ"
   "leHAiOjE0MDA1ODU4NDUsIm5iZiI6MTM5Mjg"
   "5NjI0NX0.qPkV_umXSEAQ45jRV6cSYCYMQwpz618jXIxxZhS0kYg"))
+
+
+(defn api-json-request!
+  "Make an HTTP request to the server"
+  [{:keys [route method body & headers]}]
+  (-> (session server/app)
+      (content-type "application/json")
+      (request route
+               :request-method method
+               :body (json/generate-string body)
+               :headers (or headers {}))))
