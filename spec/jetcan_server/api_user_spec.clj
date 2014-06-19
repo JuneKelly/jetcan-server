@@ -18,7 +18,7 @@
   (it "should allow a user to be created when params are correct,
        and current user is admin"
     (let [request-body
-          "{\"email\":\"qwer@example.com\",
+          "{\"id\":\"qwer@example.com\",
             \"password\":\"password3\",
             \"name\": \"Qwer\"}"
           request (-> (session app)
@@ -38,7 +38,7 @@
       (should (map? (response-json :userProfile)))
       (let [profile (response-json :userProfile)]
         (should (= "qwer@example.com"
-                   (profile :email)))
+                   (profile :id)))
         (should (= "Qwer"
                    (profile :name)))
         (should-contain :admin profile)
@@ -49,7 +49,7 @@
 
   (it "should fail when current user is not admin"
     (let [request-body
-          "{\"email\":\"qwer@example.com\",
+          "{\"id\":\"qwer@example.com\",
             \"password\":\"password3\",
             \"name\": \"Qwer\"}"
           request (-> (session app)
@@ -65,9 +65,9 @@
       (should (= (:status response) 401))
       (should (= "Not authorized." (response :body)))))
 
-  (it "should fail when email already exists"
+  (it "should fail when id already exists"
     (let [request-body
-          "{\"email\":\"userone@example.com\",
+          "{\"id\":\"userone@example.com\",
             \"password\":\"password3\",
             \"name\": \"Qwer\"}"
           request (-> (session app)
@@ -83,9 +83,9 @@
       (should (= (:status response) 403))
       (should (= "Forbidden." (response :body)))))
 
-  (it "should fail when email is not valid"
+  (it "should fail when id is not valid"
     (let [request-body
-          "{\"email\":\"dippitydoo\",
+          "{\"id\":3,
             \"password\":\"password3\",
             \"name\": \"Qwer\"}"
           request (-> (session app)
@@ -103,7 +103,7 @@
       (should (contains? response-json :errors))
       (should (map? (response-json :errors)))))
 
-  (it "should fail when email is missing"
+  (it "should fail when id is missing"
     (let [request-body
           "{\"password\":\"password3\",
             \"name\": \"Qwer\"}"
@@ -124,7 +124,7 @@
 
   (it "should fail when password is missing"
     (let [request-body
-          "{\"email\":\"qwer2@example.com\",
+          "{\"id\":\"qwer2@example.com\",
             \"name\": \"Qwer2\"}"
           request (-> (session app)
                       (content-type "application/json")
@@ -143,7 +143,7 @@
 
   (it "should fail when name is missing"
     (let [request-body
-          "{\"email\":\"qwer2@example.com\",
+          "{\"id\":\"qwer2@example.com\",
             \"password\": \"password2\"}"
           request (-> (session app)
                       (content-type "application/json")
@@ -194,8 +194,8 @@
             profile (parse-string (response :body) true)]
         (should= 200 (response :status))
         (should (map? profile))
-        (should== [:email :name :created :admin] (keys profile))
-        (should= "userone@example.com" (profile :email))
+        (should== [:id :name :created :admin] (keys profile))
+        (should= "userone@example.com" (profile :id))
         (should= "User One" (profile :name))
         (should-be string? (profile :created))
         (should= true (profile :admin)))))
@@ -206,7 +206,7 @@
 
   (it "should forbid an update without auth token"
       (let [request-body
-            "{\"email\": \"userone@example.com\",
+            "{\"id\": \"userone@example.com\",
               \"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
@@ -220,7 +220,7 @@
 
   (it "should forbid an update to another users profile"
       (let [request-body
-            "{\"email\": \"usertwo@example.com\",
+            "{\"id\": \"usertwo@example.com\",
               \"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
@@ -236,7 +236,7 @@
 
   (it "should be an error if name is omitted"
       (let [request-body
-            "{\"email\": \"userone@example.com\",
+            "{\"id\": \"userone@example.com\",
               \"zzz\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
@@ -253,7 +253,7 @@
         (should== {:name ["is invalid" "can't be blank"]}
                   (response-json :errors))))
 
-  (it "should be an error if email is omitted"
+  (it "should be an error if id is omitted"
       (let [request-body
             "{\"lol\": \"userone@example.com\",
               \"name\": \"OTHER NAME\"}"
@@ -269,11 +269,11 @@
         (should= 400 (response :status))
         (should-be map? response-json)
         (should-contain :errors response-json)
-        (should== {:email ["can't be blank"]} (response-json :errors))))
+        (should== {:id ["can't be blank"]} (response-json :errors))))
 
     (it "should be an error if name is not a string"
       (let [request-body
-            "{\"email\": \"userone@example.com\",
+            "{\"id\": \"userone@example.com\",
               \"name\": 42}"
             request (-> (session app)
                         (content-type "application/json")
@@ -292,7 +292,7 @@
   (it "should update profile to new values with good auth token"
       (let [old-profile (user/get-profile "userone@example.com")
             request-body
-            "{\"email\": \"userone@example.com\",
+            "{\"id\": \"userone@example.com\",
               \"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
@@ -306,10 +306,10 @@
         (should= 200 (response :status))
         (should-be map? response-json)
         (should-not-contain :errors response-json)
-        (should-contain :email response-json)
+        (should-contain :id response-json)
         (should-contain :name response-json)
         (should-contain :created response-json)
-        (should= "userone@example.com" (response-json :email))
+        (should= "userone@example.com" (response-json :id))
         (should= "OTHER NAME" (response-json :name))
         (should-not= (old-profile :name) (response-json :name)))))
 

@@ -29,10 +29,10 @@
   :allowed?
   (fn [context]
     (let [params (get-in context [:request :params])
-          email (params :email)
+          id (params :id)
           password (params :password)
-          token (auth/authenticate-user email password)
-          profile (user/get-profile email)]
+          token (auth/authenticate-user id password)
+          profile (user/get-profile id)]
       (if (not (nil? token))
         [true, {:payload
                 {:profile profile, :token token}}]
@@ -45,5 +45,5 @@
   (fn [context]
     (do
       (log/info {:event "user:authenticated"
-                 :user (get-in context [:payload :email])})
+                 :user (get-in context [:payload :id])})
       (json/generate-string (context :payload)))))

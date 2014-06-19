@@ -12,13 +12,13 @@
 (load-queries!)
 
 
-(defn create! [user-email, content, tags]
+(defn create! [user-id, content, tags]
   (let [id (util/generate-id)
         created (to-sql-time (util/datetime))
         updated (to-sql-time (util/datetime))
         result (-create-snippet! db-spec
                                  id
-                                 user-email
+                                 user-id
                                  content
                                  tags
                                  created

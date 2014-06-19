@@ -21,16 +21,11 @@
     (validate data)))
 
 
-(def email-regex
-  #"(?i)[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]")
-
-
 (defn user-creation-errors [data]
   (let [validate (validation-set
-                  (presence-of :email)
-                  (format-of :email
-                             :format email-regex
-                             :message "must be an email address")
+                  (presence-of :id)
+                  (validate-with-predicate :id
+                                           #(string? (:id %)))
                   (presence-of :password)
                   (presence-of :name))]
     (validate data)))
@@ -41,15 +36,16 @@
                   (presence-of :name)
                   (validate-with-predicate :name
                                            #(string? (:name %)))
-                  (presence-of :email))]
+                  (presence-of :id))]
+    (println data)
     (validate data)))
 
 
 (defn auth-errors [data]
   (let [validate (validation-set
-                  (presence-of :email)
-                  (validate-with-predicate :email
-                                           #(string? (:email %)))
+                  (presence-of :id)
+                  (validate-with-predicate :id
+                                           #(string? (:id %)))
                   (presence-of :password)
                   (validate-with-predicate :password
                                            #(string? (:password %))))]

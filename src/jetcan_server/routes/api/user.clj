@@ -12,10 +12,10 @@
 
 
 (defn user-resource-exists?
-  "Check if there is a user resource matching the email parameter"
+  "Check if there is a user resource matching the id parameter"
   [context]
   (let [params (get-in context [:request :params])]
-    (user/exists? (params :email))))
+    (user/exists? (params :id))))
 
 
 (defn can-access-user?
@@ -45,11 +45,11 @@
 
   :handle-ok
   (fn [context]
-    (let [user-email (get-in context [:request :route-params :id])
-          user-profile (user/get-profile user-email)]
+    (let [user-id (get-in context [:request :route-params :id])
+          user-profile (user/get-profile user-id)]
       (do
         (log/info {:event "user:access"
-                   :user user-email})
+                   :user user-id})
         (json/generate-string user-profile)))))
 
 
@@ -81,13 +81,13 @@
   :post!
   (fn [context]
     (let [params (get-in context  [:request :params])
-          email (:email params)
+          id (:id params)
           name (:name params)
           password (:password params)
-          new-profile (user/update! email params)]
+          new-profile (user/update! id params)]
       (do
         (log/info {:event "user:update"
-                   :user email})
+                   :user id})
         {:user-profile new-profile})))
 
   :new? ;; updates are never new resources
@@ -133,19 +133,19 @@
   :post!
   (fn [context]
     (let [params (get-in context  [:request :params])
-          email (:email params)
+          id (:id params)
           name (:name params)
           password (:password params)
-          success (user/create! email
+          success (user/create! id
                                 password
                                 name)]
       (if success
-        {:user-profile (user/get-profile email)}
+        {:user-profile (user/get-profile id)}
         {:error "Could not register user"})))
 
   :handle-created
   (fn [context]
     (do
       (log/info {:event "user:registration"
-                 :user (get-in context [:user-profile :email])})
+                 :user (get-in context [:user-profile :id])})
       (json/generate-string {:userProfile (:user-profile context)}))))

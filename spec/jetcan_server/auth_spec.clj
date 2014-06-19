@@ -19,12 +19,12 @@
    (do (reset-db)))
 
   (it "should produce a map containing claims for a user"
-      (let [user-email "userone@example.com"
+      (let [user-id "userone@example.com"
             current-time (ti/now)
-            claim (auth/user-claim user-email)]
+            claim (auth/user-claim user-id)]
         (should (map? claim))
-        (should (contains? claim :email))
-        (should (string? (claim :email)))
+        (should (contains? claim :user-id))
+        (should (string? (claim :user-id)))
         (should (contains? claim :name))
         (should (string? (claim :name)))
         (should (contains? claim :exp))
@@ -33,10 +33,10 @@
         (should (= (class (claim :nbf)) org.joda.time.DateTime))
         (should (ti/after? (claim :exp) current-time))))
 
-  (it "should return nil for a bad email"
-    (let [user-email "goose@example.com"
+  (it "should return nil for a bad id"
+    (let [user-id "goose@example.com"
           current-time (ti/now)
-          claim (auth/user-claim user-email)]
+          claim (auth/user-claim user-id)]
       (should (nil? claim)))))
 
 

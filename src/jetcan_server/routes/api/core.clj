@@ -5,7 +5,7 @@
 
 
 (defn get-current-user
-  "Get the current user from context, validating the auth_token header.
+  "Get the current user id from context, validating the auth_token header.
    Returns string username (email) if valid.
    Returns nil if the token is either invalid or not present"
   [context]

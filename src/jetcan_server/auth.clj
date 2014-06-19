@@ -18,26 +18,26 @@
       to-str))
 
 
-(defn user-claim [email]
-  (let [user-doc (user/get-profile email)
+(defn user-claim [user-id]
+  (let [user-doc (user/get-profile user-id)
         expiration (plus (now) (months 3))]
     (if user-doc
-      {:email (user-doc :email)
+      {:user-id (user-doc :id)
        :name  (user-doc :name)
        :exp expiration
        :nbf (now)}
       nil)))
 
 
-(defn user-credentials-valid? [email password]
-  (let [user-creds (user/get-credentials! email)]
+(defn user-credentials-valid? [user-id password]
+  (let [user-creds (user/get-credentials! user-id)]
     (and (not (nil? user-creds))
          (crypt/compare password (user-creds :password)))))
 
 
-(defn authenticate-user [email password]
-  (if (user-credentials-valid? email password)
-    (generate-token (user-claim email))
+(defn authenticate-user [user-id password]
+  (if (user-credentials-valid? user-id password)
+    (generate-token (user-claim user-id))
     nil))
 
 
@@ -53,8 +53,8 @@
   (-> decoded-token (verify (secret))))
 
 
-(defn get-user-email [decoded-token]
-  (get-in decoded-token [:claims :email]))
+(defn get-user-user-id [decoded-token]
+  (get-in decoded-token [:claims :user-id]))
 
 
 (defn token-valid? [decoded-token]
@@ -63,12 +63,12 @@
         current-time (now)]
     (and (not (before? exp current-time))
          (not (after? nbf current-time))
-         (user/exists? (get-user-email decoded-token)))))
+         (user/exists? (get-user-user-id decoded-token)))))
 
 
 (defn validate-user [token-string]
   (let [token (decode-token token-string)]
     (if (and token (token-valid? token))
-      (get-user-email token)
+      (get-user-user-id token)
       nil)))
 

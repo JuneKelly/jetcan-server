@@ -16,8 +16,8 @@
        (util/populate-users!)))
 
   (it "should allow an authenticated user to read their snippet"
-      (let [user-email "userone@example.com"
-            snippet-id (snippet/create! user-email
+      (let [user-id "userone@example.com"
+            snippet-id (snippet/create! user-id
                                         "content is good"
                                         ["one" "two"])
             request (-> (session app)
@@ -41,9 +41,9 @@
           (should (string? (:id snippet-data))))))
 
     (it "should allow an authenticated user to read a list of snippets"
-      (let [user-email "userone@example.com"
+      (let [user-id "userone@example.com"
             _ (doseq [num (range 1 4)]
-                (snippet/create! user-email
+                (snippet/create! user-id
                                  (str "content " num)
                                  ["one" "two"]))
             request (-> (session app)
@@ -64,9 +64,9 @@
             (should= "userone@example.com" (:user_id snippet))))))
 
     (it "should not allow an unauthenticated user to read a list of snippets"
-      (let [user-email "userone@example.com"
+      (let [user-id "userone@example.com"
             _ (doseq [num (range 1 4)]
-                (snippet/create! user-email
+                (snippet/create! user-id
                                  (str "content " num)
                                  ["one" "two"]))
             request (-> (session app)
@@ -77,9 +77,9 @@
         (should= "Not authorized." (:body response))))
 
     (it "should return no snippets if the user does not have any"
-      (let [user-email "usertwo@example.com"
+      (let [user-id "usertwo@example.com"
             _ (doseq [num (range 1 4)]
-                (snippet/create! user-email
+                (snippet/create! user-id
                                  (str "content " num)
                                  ["one" "two"]))
             request (-> (session app)
@@ -93,8 +93,8 @@
           (should (empty? data)))))
 
     (it "should not allow an unauthenticated user to read a snippet"
-      (let [user-email "userone@example.com"
-            snippet-id (snippet/create! user-email
+      (let [user-id "userone@example.com"
+            snippet-id (snippet/create! user-id
                                         "content is good"
                                         ["one" "two"])
             request (-> (session app)
@@ -105,8 +105,8 @@
         (should= "Not authorized." (:body response))))
 
    (it "should not allow another user to access a users snippet"
-      (let [user-email "userone@example.com"
-            snippet-id (snippet/create! user-email
+      (let [user-id "userone@example.com"
+            snippet-id (snippet/create! user-id
                                         "content is good"
                                         ["one" "two"])
             request (-> (session app)

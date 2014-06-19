@@ -22,7 +22,7 @@
        (util/populate-users!)))
 
   (it "should issue a token when credentials are correct"
-      (let [request (auth-request! {:email "userone@example.com"
+      (let [request (auth-request! {:id "userone@example.com"
                                     :password "password1"})
             response (:response request)
             response-json (parse-string (response :body) true)]
@@ -34,11 +34,11 @@
         (should (< 0 (count (response-json :token))))
         (should-contain :profile response-json)
         (should (= "userone@example.com"
-                   (get-in response-json [:profile :email])))))
-  
-  (it "should fail to authenticate when email is unknown"
-      (let [request (auth-request! {:email "gooser@example.com"
-                                    :password "lol"}) 
+                   (get-in response-json [:profile :id])))))
+
+  (it "should fail to authenticate when id is unknown"
+      (let [request (auth-request! {:id "gooser@example.com"
+                                    :password "lol"})
             response (:response request)]
         (should (= "text/plain"
                    (get (:headers response) "Content-Type")))
@@ -47,16 +47,16 @@
         (should (= "Forbidden." (response :body)))))
 
   (it "should fail to authenticate when password is incorrect"
-      (let [request (auth-request! {:email "userone@example.com"
-                                    :password "lol"}) 
+      (let [request (auth-request! {:id "userone@example.com"
+                                    :password "lol"})
             response (:response request)]
         (should (= "text/plain"
                    (get (:headers response) "Content-Type")))
         (should (not (= (:status response) 201)))
         (should (= (:status response) 403))
         (should (= "Forbidden." (response :body)))))
-  
-  (it "should fail when user email is not submitted"
+
+  (it "should fail when user id is not submitted"
       (let [request (auth-request! {:derp "userone@example.com"
                                     :password "password1"})
             response (:response request)
@@ -68,11 +68,11 @@
         (should (not (contains? response-json :token)))
         (should (contains? response-json :errors))
         (should (map? (response-json :errors)))
-        (should== {:email ["is invalid" "can't be blank"]}
+        (should== {:id ["is invalid" "can't be blank"]}
                   (:errors response-json))))
-  
+
   (it "should fail when password is not submitted"
-      (let [request (auth-request! {:email "userone@example.com"
+      (let [request (auth-request! {:id "userone@example.com"
                                     :derp "password1"})
             response (:response request)
             response-json (parse-string (response :body) true)]
@@ -85,9 +85,9 @@
         (should (map? (response-json :errors)))
         (should== {:password ["is invalid" "can't be blank"]}
                   (:errors response-json))))
-  
-  (it "should fail when the supplied email is not a string"
-      (let [request (auth-request! {:email [1 2 3]
+
+  (it "should fail when the supplied id is not a string"
+      (let [request (auth-request! {:id [1 2 3]
                                     :password "password1"})
             response (:response request)
             response-json (parse-string (response :body) true)]
@@ -98,11 +98,11 @@
         (should (not (contains? response-json :token)))
         (should (contains? response-json :errors))
         (should (map? (response-json :errors)))
-        (should== {:email ["is invalid"]}
+        (should== {:id ["is invalid"]}
                   (:errors response-json))))
-  
+
   (it "should fail when password is not a string"
-      (let [request (auth-request! {:email "userone@example.com"
+      (let [request (auth-request! {:id "userone@example.com"
                                     :password true})
             response (:response request)
             response-json (parse-string (response :body) true)]

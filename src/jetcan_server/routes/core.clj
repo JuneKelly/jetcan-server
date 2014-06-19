@@ -6,8 +6,8 @@
             [jetcan-server.routes.api.snippet :refer [snippet]]
             [jetcan-server.routes.api.auth :refer [authentication]]
             [jetcan-server.routes.api.user :refer [user-create
-                                               user-read
-                                               user-update]]))
+                                                   user-read
+                                                   user-update]]))
 
 
 (defroutes api-routes
