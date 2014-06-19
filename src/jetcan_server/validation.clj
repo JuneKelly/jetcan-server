@@ -37,7 +37,6 @@
                   (validate-with-predicate :name
                                            #(string? (:name %)))
                   (presence-of :id))]
-    (println data)
     (validate data)))
 
 

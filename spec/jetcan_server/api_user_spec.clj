@@ -206,8 +206,7 @@
 
   (it "should forbid an update without auth token"
       (let [request-body
-            "{\"id\": \"userone@example.com\",
-              \"name\": \"OTHER NAME\"}"
+            "{\"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
                         (request "/api/user/userone@example.com"
@@ -220,8 +219,7 @@
 
   (it "should forbid an update to another users profile"
       (let [request-body
-            "{\"id\": \"usertwo@example.com\",
-              \"name\": \"OTHER NAME\"}"
+            "{\"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
                         (request "/api/user/usertwo@example.com"
@@ -236,8 +234,7 @@
 
   (it "should be an error if name is omitted"
       (let [request-body
-            "{\"id\": \"userone@example.com\",
-              \"zzz\": \"OTHER NAME\"}"
+            "{\"zzz\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
                         (request "/api/user/userone@example.com"
@@ -253,28 +250,24 @@
         (should== {:name ["is invalid" "can't be blank"]}
                   (response-json :errors))))
 
-  (it "should be an error if id is omitted"
+  (it "should be an error if specified id does not exist"
+      ;; TODO this should probably be a 404
       (let [request-body
-            "{\"lol\": \"userone@example.com\",
-              \"name\": \"OTHER NAME\"}"
+            "{\"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
-                        (request "/api/user/userone@example.com"
+                        (request "/api/user/a_bad_id"
                                  :request-method :post
                                  :body request-body
                                  :headers {:auth_token
                                            util/good-token}))
-            response (request :response)
-            response-json (parse-string (response :body) true)]
-        (should= 400 (response :status))
-        (should-be map? response-json)
-        (should-contain :errors response-json)
-        (should== {:id ["can't be blank"]} (response-json :errors))))
+            response (request :response)]
+        (should= 401 (response :status))
+        (should= "Not authorized." (:body response))))
 
-    (it "should be an error if name is not a string"
+  (it "should be an error if name is not a string"
       (let [request-body
-            "{\"id\": \"userone@example.com\",
-              \"name\": 42}"
+            "{\"name\": 42}"
             request (-> (session app)
                         (content-type "application/json")
                         (request "/api/user/userone@example.com"
@@ -292,8 +285,7 @@
   (it "should update profile to new values with good auth token"
       (let [old-profile (user/get-profile "userone@example.com")
             request-body
-            "{\"id\": \"userone@example.com\",
-              \"name\": \"OTHER NAME\"}"
+            "{\"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
                         (request "/api/user/userone@example.com"
