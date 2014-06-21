@@ -10,19 +10,19 @@ angular.module('jetcanApp')
       $scope.editToggle = () ->
         $scope.editMode = !$scope.editMode
 
-      $scope.userEmail = $stateParams.id
+      $scope.userId = $stateParams.id
       $scope.profile = null
 
       $scope.isCurrentUser = () ->
-        $scope.userEmail == Auth.currentUser()
+        $scope.userId == Auth.currentUser()
 
       $scope.loadProfile = () ->
-        User.get($scope.userEmail)
+        User.get($scope.userId)
           .then (profileData) ->
             $scope.profile = profileData
 
       $scope.updateProfile = () ->
-        User.update($scope.userEmail, $scope.profile)
+        User.update($scope.userId, $scope.profile)
         $scope.editMode = false
 
       if Auth.loggedIn()

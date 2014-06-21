@@ -1,12 +1,12 @@
 angular.module('jetcanApp')
   .service 'User', ($http, Notifications, Auth, Storage, $q) ->
 
-    get = (email) ->
+    get = (id) ->
       deferred = $q.defer()
 
       $http(
         method: 'GET'
-        url: 'api/user/' + email
+        url: 'api/user/' + id
         headers: {'auth_token': Storage.getToken() }
       )
         .success (payload, status, headers, config) ->
@@ -18,19 +18,19 @@ angular.module('jetcanApp')
 
       return deferred.promise
 
-    update = (email, newData) ->
+    update = (id, newData) ->
       data =
-        email: email
+        id: id
         name: newData.name
 
       $http(
         method: 'POST'
-        url: 'api/user/' + email
+        url: 'api/user/' + id
         headers: {'auth_token': Storage.getToken() }
         data: data
       )
         .success (payload, status, headers, config) ->
-          Notifications.success('Updated Profile of ' + email)
+          Notifications.success('Updated Profile of ' + id)
 
         .error (payload, status, headers, config) ->
           Notifications.error(status + ', something went wrong')

@@ -10,10 +10,10 @@ angular.module('jetcanApp')
       else
         return angular.fromJson(profile)
 
-    getUserEmail = () ->
+    getUserId = () ->
       user = getProfile()
       if user
-        user.email
+        user.id
       else
         ''
 
@@ -29,7 +29,7 @@ angular.module('jetcanApp')
     return {
       getProfile: getProfile
       setProfile: setProfile
-      getUserEmail: getUserEmail
+      getUserId: getUserId
       getToken: getToken
       setToken: setToken
     }

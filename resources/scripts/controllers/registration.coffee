@@ -9,7 +9,7 @@ angular.module('jetcanApp')
         Notifications.error('Passwords must match')
       else
         credentials =
-          email: user.email
+          id: user.id
           name: user.displayName
           password: user.passwordOne
         Auth.register(credentials)

@@ -17,7 +17,7 @@ angular.module('jetcanApp')
           'auth_token': Storage.getToken()
       )
         .success (payload, status, headers, config) ->
-          Notifications.success('Created user ' + credentials.email)
+          Notifications.success('Created user ' + credentials.id)
 
         .error (payload, status, headers, config) ->
           console.log 'ERROR'
@@ -26,12 +26,12 @@ angular.module('jetcanApp')
             'Error, User registration failed'
           )
 
-    login = (email, password) ->
+    login = (id, password) ->
       reset()
       $http(
         method: 'POST'
         url: '/api/auth'
-        data: {email: email, password: password}
+        data: {id: id, password: password}
         headers: { 'Accept': 'application/json' }
       )
         .success (payload, status, headers, config) ->
@@ -44,7 +44,7 @@ angular.module('jetcanApp')
               Storage.setProfile(payload.profile)
               Storage.setToken(payload.token)
               Notifications.success(
-                'Logged in as ' + payload.profile.email)
+                'Logged in as ' + payload.profile.id)
             else
               Notifications.error(
                 'Error, authentication failed'
@@ -84,7 +84,7 @@ angular.module('jetcanApp')
         true
 
     currentUser = () ->
-      Storage.getUserEmail()
+      Storage.getUserId()
 
     return {
       currentUser: currentUser

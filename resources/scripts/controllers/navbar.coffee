@@ -4,7 +4,7 @@ angular.module('jetcanApp')
     $scope.aboutText = 'About'
 
     $scope.login = (user) ->
-      Auth.login(user.email, user.password)
+      Auth.login(user.id, user.password)
       user.username = ''
       user.password = ''
 

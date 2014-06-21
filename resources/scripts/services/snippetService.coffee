@@ -17,7 +17,7 @@ angular.module('jetcanApp')
       return deferred.promise
 
     create = (snippetData) ->
-      snippetData['user'] = Storage.getUserEmail()
+      snippetData['user'] = Storage.getUserId()
 
       deferred = $q.defer()
 
