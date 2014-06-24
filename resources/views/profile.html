@@ -9,6 +9,9 @@
       <p>
         Member since {{profile.created | date:'yyyy-MM-dd'}}
       </p>
+      <p ng-if="profile.admin === true">
+        <strong>Admin</strong>
+      </p>
       <br>
       <p ng-if="isCurrentUser()">
         <button class="btn btn-xs"
