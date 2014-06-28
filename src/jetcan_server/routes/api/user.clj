@@ -28,11 +28,12 @@
     can-access))
 
 
-(defn can-create-user?
+(defn current-user-admin?
   "Check that a user account can be created"
   [context]
   (let [current-user (get-current-user context)]
-    (user/is-admin? current-user)))
+    (and (not (nil? current-user))
+         (user/is-admin? current-user))))
 
 
 (defresource user-read [id]
@@ -51,6 +52,22 @@
         (log/info {:event "user:access"
                    :user user-id})
         (json/generate-string user-profile)))))
+
+
+(defresource user-list
+  :available-media-types ["application/json"]
+  :allowed-methods [:get]
+
+  :authorized?
+  current-user-admin?
+
+  :handle-ok
+  (fn [context]
+    (let [all-users (user/get-list)]
+      (do
+        (log/info {:event "userlist:access"
+                   :user (get-current-user context)})
+        (json/generate-string all-users)))))
 
 
 (defresource user-update [id]
@@ -107,7 +124,7 @@
   :allowed-methods [:post]
 
   :authorized?
-  can-create-user?
+  current-user-admin?
 
   :malformed?
   (fn [context]

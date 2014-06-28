@@ -7,12 +7,14 @@
             [jetcan-server.routes.api.auth :refer [authentication]]
             [jetcan-server.routes.api.user :refer [user-create
                                                    user-read
+                                                   user-list
                                                    user-update]]))
 
 
 (defroutes api-routes
   (POST "/api/auth" [] authentication)
   (POST "/api/user" [] user-create)
+  (GET  "/api/user" [] user-list)
   (POST "/api/user/:id" [id] (user-update id))
   (GET "/api/user/:id" [id] (user-read id))
   (POST "/api/snippet" [] snippet)

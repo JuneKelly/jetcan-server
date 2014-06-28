@@ -34,3 +34,7 @@ SELECT exists(
   SELECT 1 from user_account
   WHERE id = :email
 );
+
+-- name: -get-user-list
+SELECT id, name, created, admin
+FROM user_account

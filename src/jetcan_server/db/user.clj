@@ -74,3 +74,8 @@
   (let [profile (get-profile id)]
     (= (profile :admin)
        true)))
+
+
+(defn get-list []
+  (let [all-users (-get-user-list db-spec)]
+    (vec all-users)))

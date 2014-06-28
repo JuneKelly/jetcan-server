@@ -306,4 +306,46 @@
         (should-not= (old-profile :name) (response-json :name)))))
 
 
+(describe "user list reads"
+
+  (before
+   (do (util/reset-db!)
+       (util/populate-users!)))
+
+  (it "should allow an admin user to get a list of all users"
+      (let [request (-> (session app)
+                        (request "/api/user"
+                                 :request-method :get
+                                 :headers {:auth_token
+                                           util/user-one-token}))
+            response (:response request)
+            profiles (parse-string (:body response) true)]
+        (should= 200 (:status response))
+        (should= 2 (count profiles))
+        (should== ["userone@example.com" "usertwo@example.com"]
+                  (map :id profiles))
+        (doseq [user profiles]
+          (should== [:id :name :admin :created]
+                    (keys user)))))
+
+  (it "should forbid reading list of users if current user is not admin"
+      (let [request (-> (session app)
+                        (request "/api/user"
+                                 :request-method :get
+                                 :headers {:auth_token util/user-two-token}))
+            response (:response request)]
+        (should= 401 (response :status))
+        (should-not= "application/json;charset=UTF-8"
+                     (get (:headers response) "Content-Type"))))
+
+  (it "should forbid reading list of users if no auth-token is submitted"
+      (let [request (-> (session app)
+                        (request "/api/user"
+                                 :request-method :get))
+            response (:response request)]
+        (should= 401 (response :status))
+        (should-not= "application/json;charset=UTF-8"
+                     (get (:headers response) "Content-Type")))))
+
+
 (run-specs)
