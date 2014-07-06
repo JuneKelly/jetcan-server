@@ -222,15 +222,36 @@
             "{\"name\": \"OTHER NAME\"}"
             request (-> (session app)
                         (content-type "application/json")
-                        (request "/api/user/usertwo@example.com"
+                        (request "/api/user/userone@example.com"
                                  :request-method :post
                                  :body request-body
                                  :headers {:auth_token
-                                           util/good-token}))
+                                           util/user-two-token}))
             response (request :response)]
         (should= 401 (response :status))
         (should-be string? (response :body))
         (should= "Not authorized." (response :body))))
+
+  (it "should allow admin to update another users profile"
+      (let [request-body
+            "{\"name\": \"OTHER NAME\"}"
+            request (-> (session app)
+                        (content-type "application/json")
+                        (request "/api/user/usertwo@example.com"
+                                 :request-method :post
+                                 :body request-body
+                                 :headers {:auth_token
+                                           util/user-one-token}))
+            response (request :response)]
+        (should= 200 (response :status))
+        (let [response-json (parse-string (response :body) true)]
+          (should-be map? response-json)
+          (should-not-contain :errors response-json)
+          (should-contain :id response-json)
+          (should-contain :name response-json)
+          (should-contain :created response-json)
+          (should= "usertwo@example.com" (response-json :id))
+          (should= "OTHER NAME" (response-json :name)))))
 
   (it "should be an error if name is omitted"
       (let [request-body
@@ -251,7 +272,6 @@
                   (response-json :errors))))
 
   (it "should be an error if specified id does not exist"
-      ;; TODO this should probably be a 404
       (let [request-body
             "{\"name\": \"OTHER NAME\"}"
             request (-> (session app)
@@ -262,8 +282,8 @@
                                  :headers {:auth_token
                                            util/good-token}))
             response (request :response)]
-        (should= 401 (response :status))
-        (should= "Not authorized." (:body response))))
+        (should= 404 (response :status))
+        (should= "Resource not found." (:body response))))
 
   (it "should be an error if name is not a string"
       (let [request-body

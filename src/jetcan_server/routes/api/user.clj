@@ -28,6 +28,18 @@
     can-access))
 
 
+(defn can-edit-user?
+  "Check if the user resource can be edited"
+  [context]
+  (let [current-user (get-current-user context)
+        requested-user-id (get-in context [:request :route-params :id])
+        can-access (= requested-user-id current-user)]
+    (and (not (nil? current-user))
+         (not (nil? requested-user-id))
+         (or (= requested-user-id current-user)
+             (user/is-admin? current-user)))))
+
+
 (defn current-user-admin?
   "Check that a user account can be created"
   [context]
@@ -75,10 +87,13 @@
   :allowed-methods [:post]
 
   :authorized?
-  can-access-user?
+  can-edit-user?
 
-  :allowed?
+  :exists?
   user-resource-exists?
+
+  :can-post-to-missing?
+  false
 
   :malformed?
   (fn [context]
