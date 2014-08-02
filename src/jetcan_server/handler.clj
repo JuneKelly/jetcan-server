@@ -18,7 +18,7 @@
 (defn- create-default-user
   "Create a default admin user, to bootstrap the service"
   []
-  (if (not (user/exists? "admin@jetcan-server"))
+  (if (not (user/exists? "admin"))
     (do
       (timbre/info "Setting up default user account admin:password")
       (user/create-admin! "admin"
