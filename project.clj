@@ -1,4 +1,4 @@
-(defproject jetcan-server "0.1.1"
+(defproject jetcan-server "0.2.0"
   :description
   "A toy app to demonstrate token based auth with clojure and angularjs"
 
