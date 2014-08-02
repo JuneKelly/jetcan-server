@@ -2,7 +2,7 @@
 
 ![jetcan-logo](resources/images/jetcan_transparent_200x200.png)
 
-A snippet-saving app in Clojure, PostgreSQL AngularJS.
+A snippet-saving app in Clojure, PostgreSQL and AngularJS.
 
 
 # Dependencies
