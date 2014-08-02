@@ -11,7 +11,9 @@
 (defn- secret [] (env :secret))
 
 
+;;------------------------
 ;; Generate a token
+;;------------------------
 (defn generate-token [claim]
   (-> claim
       jwt (sign :HS256 (secret))
@@ -41,16 +43,14 @@
     nil))
 
 
+;;------------------------
 ;; Validate a token
+;;------------------------
 (defn decode-token [token-string]
   (try
     (-> token-string str->jwt)
     (catch Exception e
       nil)))
-
-
-(defn token-valid? [decoded-token]
-  (-> decoded-token (verify (secret))))
 
 
 (defn get-user-user-id [decoded-token]
@@ -61,7 +61,8 @@
   (let [exp (from-long (* 1000 (get-in decoded-token [:claims :exp])))
         nbf (from-long (* 1000 (get-in decoded-token [:claims :nbf])))
         current-time (now)]
-    (and (not (before? exp current-time))
+    (and (-> decoded-token (verify (secret)))
+         (not (before? exp current-time))
          (not (after? nbf current-time))
          (user/exists? (get-user-user-id decoded-token)))))
 
