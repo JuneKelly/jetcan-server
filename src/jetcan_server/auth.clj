@@ -72,4 +72,3 @@
     (if (and token (token-valid? token))
       (get-user-user-id token)
       nil)))
-
