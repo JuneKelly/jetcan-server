@@ -15,7 +15,7 @@
                  [markdown-clj "0.9.43"]
                  [liberator "0.11.0"]
                  [clj-time "0.7.0"]
-                 [clj-jwt "0.0.6"]
+                 [clj-jwt "0.0.10"]
                  [crypto-random "1.2.0"]
                  [com.novemberain/monger "1.7.0"]
                  [yesql "0.4.0"]

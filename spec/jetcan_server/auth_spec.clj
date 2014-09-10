@@ -2,6 +2,7 @@
   (:require [jetcan-server.auth :as auth]
             [jetcan-server.test-utils :as util]
             [speclj.core :refer :all]
+            [clj-jwt.core  :refer :all]
             [clj-time.core :as ti]
             [clj-time.coerce :as tc]))
 
@@ -68,8 +69,27 @@
           result (auth/validate-user token)]
       (should (nil? result))
       (should (not (string? result)))
-      (should (not (= "notauser@example.com" result))))))
+      (should (not (= "notauser@example.com" result)))))
+
+  (it "should fail with an unsigned token"
+      (let [token (-> (auth/user-claim "userone@example.com")
+                      jwt
+                      to-str)
+            result (auth/validate-user token)]
+        (should (nil? result))))
+
+  (it "should fail with a token we did not sign"
+      (let [token (-> (auth/user-claim "userone@example.com")
+                      jwt
+                      (sign :HS256 "obviously_not_our_secret")
+                      to-str)
+            result (auth/validate-user token)]
+        (should (nil? result))))
+
+  (it "should fail for a garbage string"
+      (let [token "this.token.blows."
+            result (auth/validate-user token)]
+        (should (nil? result)))))
 
 
 (run-specs)
-

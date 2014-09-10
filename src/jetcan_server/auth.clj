@@ -62,7 +62,8 @@
   (let [exp (from-long (* 1000 (get-in decoded-token [:claims :exp])))
         nbf (from-long (* 1000 (get-in decoded-token [:claims :nbf])))
         current-time (now)]
-    (and (-> decoded-token (verify (secret)))
+    (and (not (empty? (:signature decoded-token)))
+         (verify decoded-token (secret))
          (not (before? exp current-time))
          (not (after? nbf current-time))
          (user/exists? (get-user-user-id decoded-token)))))
