@@ -16,7 +16,8 @@
 ;;------------------------
 (defn generate-token [claim]
   (-> claim
-      jwt (sign :HS256 (secret))
+      jwt
+      (sign :HS256 (secret))
       to-str))
 
 

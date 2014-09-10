@@ -131,6 +131,8 @@ module.exports = (grunt) ->
     "parallel:server"
   ]
 
+  grunt.registerTask "serve", ["server"]
+
   grunt.registerTask "build", [
     "compass"
     "copy:views"
@@ -172,4 +174,3 @@ module.exports = (grunt) ->
     grunt.file.write(migrationsPath + downFile,
       "-- " + downFile
     )
-
