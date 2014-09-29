@@ -79,3 +79,12 @@
 (defn get-list []
   (let [all-users (-get-user-list db-spec)]
     (vec all-users)))
+
+
+(defn update-user-disabled-status! [user-id new-status]
+  (if (exists? user-id)
+    (do (-update-user-disabled-status! db-spec
+                                       new-status
+                                       user-id)
+        (get-profile user-id))
+    nil))

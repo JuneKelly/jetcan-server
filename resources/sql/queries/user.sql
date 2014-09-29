@@ -35,6 +35,13 @@ SELECT exists(
   WHERE id = :email
 );
 
+
 -- name: -get-user-list
 SELECT id, name, created, admin, disabled
 FROM user_account
+
+
+--name: -update-user-disabled-status!
+UPDATE user_account
+SET disabled = :disabled
+WHERE id = :id

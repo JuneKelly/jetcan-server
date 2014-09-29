@@ -373,5 +373,45 @@
         (should-not= "application/json;charset=UTF-8"
                      (get (:headers response) "Content-Type")))))
 
+(describe "user disable"
+
+  (before
+   (do (util/reset-db!)
+       (util/populate-users!)))
+
+  (it "should allow an admin user to disable another user"
+
+      )
+
+
+  (it "should allow an admin user to re-enable another user"
+
+      )
+
+
+  (it "should not allow a non-admin user to disable another user"
+
+      )
+
+  (it "should not allow a non-admin user to re-enable another user"
+
+      )
+
+  (it "should not allow anything without an auth token"
+      (let [request (util/api-json-request!
+                      {:route "/api/user/usertwo@example.com/disabled"
+                       :method :put
+                       :body "{\"disabled\": true}"})
+            response (request :response)]
+        (should= 401 (response :status))
+        (should-be string? (response :body))
+        (should= "Not authorized." (response :body)))
+
+      )
+
+
+
+)
+
 
 (run-specs)

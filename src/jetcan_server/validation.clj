@@ -31,6 +31,13 @@
     (validate data)))
 
 
+(defn user-disabled-errors [data]
+  (let [validate (validation-set
+                  (presence-of :disabled)
+                  (validate-with-predicate :disabled
+                                           #(contains? #{true false} (:disabled %))))]))
+
+
 (defn user-update-errors [data]
   (let [validate (validation-set
                   (presence-of :name)

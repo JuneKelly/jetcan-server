@@ -8,15 +8,20 @@
             [jetcan-server.routes.api.user :refer [user-create
                                                    user-read
                                                    user-list
-                                                   user-update]]))
+                                                   user-update
+                                                   user-disabled]]))
 
 
 (defroutes api-routes
+
   (POST "/api/auth" [] authentication)
+
   (POST "/api/user" [] user-create)
   (GET  "/api/user" [] user-list)
   (POST "/api/user/:id" [id] (user-update id))
   (GET "/api/user/:id" [id] (user-read id))
+  (PUT "/api/user/:id/disabled" [id] (user-disabled id))
+
   (POST "/api/snippet" [] snippet)
   (PUT "/api/snippet/:id" [id] (snippet id))
   (DELETE "/api/snippet/:id" [id] (snippet id))

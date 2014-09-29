@@ -6,8 +6,10 @@
             [noir.validation :as v]
             [cheshire.core :as json]
             [jetcan-server.routes.api.core :refer [get-current-user]]
-            [jetcan-server.validation :refer [user-creation-errors
-                                          user-update-errors]]
+            [jetcan-server.validation
+             :refer [user-creation-errors
+                     user-update-errors
+                     user-disabled-errors]]
             [jetcan-server.util :refer [ensure-json]]))
 
 
@@ -179,5 +181,48 @@
   (fn [context]
     (do
       (log/info {:event "user:registration"
+                 :user (get-in context [:user-profile :id])})
+      (json/generate-string {:userProfile (:user-profile context)}))))
+
+
+
+(defresource user-disabled [id]
+  :available-media-types ["application/json"]
+  :allowed-methods [:put]
+
+  :authorized?
+  current-user-admin?
+
+  :malformed?
+  (fn [context]
+    (let [params (get-in context [:request :params])]
+      (let [errors (user-disabled-errors params)]
+        (if (empty? errors)
+          false
+          [true (ensure-json {:errors errors})]))))
+
+  :handle-malformed
+  (fn [context]
+    {:errors (context :errors)})
+
+  :exists?
+  user-resource-exists?
+
+  :allowed?
+  (fn [context] (user-resource-exists? context))
+
+  :post!
+  (fn [context]
+    (let [params (get-in context  [:request :params])
+          new-status (:disabled params)
+          profile (user/update-user-disabled-status! id new-status)]
+      (if profile
+        {:user-profile profile}
+        {:error "Could not update user disabled status"})))
+
+  :handle-created
+  (fn [context]
+    (do
+      (log/info {:event "user:disabled"
                  :user (get-in context [:user-profile :id])})
       (json/generate-string {:userProfile (:user-profile context)}))))
