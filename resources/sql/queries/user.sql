@@ -12,7 +12,7 @@ VALUES (
 
 -- name: -get-user-profile
 -- Gets profile fields for a single user by email id
-SELECT id, name, created, admin FROM user_account
+SELECT id, name, created, admin, disabled FROM user_account
 WHERE id = :email;
 
 
@@ -36,5 +36,5 @@ SELECT exists(
 );
 
 -- name: -get-user-list
-SELECT id, name, created, admin
+SELECT id, name, created, admin, disabled
 FROM user_account

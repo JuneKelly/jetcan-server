@@ -37,6 +37,8 @@
       (should (contains? response-json :userProfile))
       (should (map? (response-json :userProfile)))
       (let [profile (response-json :userProfile)]
+        (should== [:id :name :admin :created :disabled]
+                  (keys profile))
         (should (= "qwer@example.com"
                    (profile :id)))
         (should (= "Qwer"
@@ -45,7 +47,9 @@
         (should= false
                  (profile :admin))
         (should (contains? profile :created))
-        (should (string? (profile :created))))))
+        (should (string? (profile :created)))
+        (should (contains? profile :disabled))
+        (should= false (profile :disabled)))))
 
   (it "should fail when current user is not admin"
     (let [request-body
@@ -194,11 +198,13 @@
             profile (parse-string (response :body) true)]
         (should= 200 (response :status))
         (should (map? profile))
-        (should== [:id :name :created :admin] (keys profile))
+        (should== [:id :name :created :admin :disabled] (keys profile))
         (should= "userone@example.com" (profile :id))
         (should= "User One" (profile :name))
         (should-be string? (profile :created))
-        (should= true (profile :admin)))))
+        (should= true (profile :admin))
+        (should (contains? profile :disabled))
+        (should= false (profile :disabled)))))
 
 
 (describe
@@ -345,7 +351,7 @@
         (should== ["userone@example.com" "usertwo@example.com"]
                   (map :id profiles))
         (doseq [user profiles]
-          (should== [:id :name :admin :created]
+          (should== [:id :name :admin :created :disabled]
                     (keys user)))))
 
   (it "should forbid reading list of users if current user is not admin"
