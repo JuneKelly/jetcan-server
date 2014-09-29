@@ -208,10 +208,17 @@
   :exists?
   user-resource-exists?
 
+  :new?
+  false
+
+  :respond-with-entity? true
+
+  :multiple-representations? false
+
   :allowed?
   (fn [context] (user-resource-exists? context))
 
-  :post!
+  :put!
   (fn [context]
     (let [params (get-in context  [:request :params])
           new-status (:disabled params)
@@ -220,7 +227,7 @@
         {:user-profile profile}
         {:error "Could not update user disabled status"})))
 
-  :handle-created
+  :handle-ok
   (fn [context]
     (do
       (log/info {:event "user:disabled"

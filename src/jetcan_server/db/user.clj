@@ -83,7 +83,8 @@
 
 (defn update-user-disabled-status! [user-id new-status]
   (if (exists? user-id)
-    (do (-update-user-disabled-status! db-spec
+    (do
+      (-update-user-disabled-status! db-spec
                                        new-status
                                        user-id)
         (get-profile user-id))

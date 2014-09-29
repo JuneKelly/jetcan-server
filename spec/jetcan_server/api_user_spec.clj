@@ -380,22 +380,77 @@
        (util/populate-users!)))
 
   (it "should allow an admin user to disable another user"
-
-      )
-
+      (let [old-profile (user/get-profile "usertwo@example.com")
+            request (util/api-json-request!
+                     {:route "/api/user/usertwo@example.com/disabled"
+                      :method :put
+                      :body {:disabled true}
+                      :headers {:auth_token
+                                util/user-one-token}})
+            response (request :response)
+            response-json (parse-string (response :body) true)
+            new-profile (response-json :userProfile)]
+        (should= 200 (response :status))
+        (should-be map? new-profile)
+        (should= false (old-profile :disabled))
+        (should= true (new-profile :disabled))))
 
   (it "should allow an admin user to re-enable another user"
-
-      )
-
+      (let [old-profile (user/get-profile "usertwo@example.com")
+            request (util/api-json-request!
+                     {:route "/api/user/usertwo@example.com/disabled"
+                      :method :put
+                      :body {:disabled true}
+                      :headers {:auth_token
+                                util/user-one-token}})
+            response (request :response)
+            response-json (parse-string (response :body) true)
+            new-profile (response-json :userProfile)]
+        (should= 200 (response :status))
+        (should= false (old-profile :disabled))
+        (should= true (new-profile :disabled))
+        ;; re-enable the user
+        (let [old-profile (user/get-profile "usertwo@example.com")
+              request (util/api-json-request!
+                       {:route "/api/user/usertwo@example.com/disabled"
+                        :method :put
+                        :body {:disabled false}
+                        :headers {:auth_token
+                                  util/user-one-token}})
+              response (request :response)
+              response-json (parse-string (response :body) true)
+              new-profile (response-json :userProfile)]
+          (should= 200 (response :status))
+          (should= true (old-profile :disabled))
+          (should= false (new-profile :disabled)))))
 
   (it "should not allow a non-admin user to disable another user"
-
-      )
+      (let [request (util/api-json-request!
+                     {:route "/api/user/userone@example.com/disabled"
+                      :method :put
+                      :body {:disabled true}
+                      :headers {:auth_token
+                                util/user-two-token}})
+            response (request :response)
+            profile (user/get-profile "userone@example.com")]
+        (should= 401 (response :status))
+        (should= "Not authorized." (response :body))
+        (should= false (profile :disabled))))
 
   (it "should not allow a non-admin user to re-enable another user"
-
-      )
+      (do
+        (user/update-user-disabled-status! "userone@example.com" true)
+        (let [request (util/api-json-request!
+                       {:route "/api/user/userone@example.com/disabled"
+                        :method :put
+                        :body {:disabled false}
+                        :headers {:auth_token
+                                  util/user-two-token}})
+              response (request :response)
+              profile (user/get-profile "userone@example.com")]
+          (should= 401 (response :status))
+          (should= "Not authorized." (response :body))
+          (should= true (profile :disabled)))))
 
   (it "should not allow anything without an auth token"
       (let [request (util/api-json-request!
@@ -405,13 +460,7 @@
             response (request :response)]
         (should= 401 (response :status))
         (should-be string? (response :body))
-        (should= "Not authorized." (response :body)))
-
-      )
-
-
-
-)
+        (should= "Not authorized." (response :body)))))
 
 
 (run-specs)

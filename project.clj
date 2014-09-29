@@ -13,7 +13,7 @@
                  [com.postspectacular/rotor "0.1.0"]
                  [com.taoensso/tower "2.0.2"]
                  [markdown-clj "0.9.43"]
-                 [liberator "0.11.0"]
+                 [liberator "0.12.0"]
                  [clj-time "0.7.0"]
                  [clj-jwt "0.0.11"]
                  [crypto-random "1.2.0"]
