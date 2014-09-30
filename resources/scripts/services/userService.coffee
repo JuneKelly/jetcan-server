@@ -18,6 +18,23 @@ angular.module('jetcanApp')
 
       return deferred.promise
 
+    getAll = () ->
+      deferred = $q.defer()
+
+      $http(
+        method: 'GET'
+        url: 'api/user'
+        headers: {'auth_token': Storage.getToken() }
+      )
+        .success (payload, status, headers, config) ->
+          deferred.resolve(payload)
+
+        .error (payload, status, headers, config) ->
+          if status == 401
+            Notifications.error('You are not authorized to do that')
+
+      return deferred.promise
+
     update = (id, newData) ->
       data =
         id: id
@@ -38,4 +55,5 @@ angular.module('jetcanApp')
     return {
       get: get
       update: update
+      getAll: getAll
     }
