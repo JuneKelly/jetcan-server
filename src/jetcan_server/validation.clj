@@ -38,6 +38,13 @@
                                            #(contains? #{true false} (:disabled %))))]))
 
 
+(defn user-admin-errors [data]
+  (let [validate (validation-set
+                  (presence-of :admin)
+                  (validate-with-predicate :admin
+                                           #(contains? #{true false} (:admin %))))]))
+
+
 (defn user-update-errors [data]
   (let [validate (validation-set
                   (presence-of :name)

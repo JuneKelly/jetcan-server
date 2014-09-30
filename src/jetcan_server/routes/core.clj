@@ -9,7 +9,8 @@
                                                    user-read
                                                    user-list
                                                    user-update
-                                                   user-disabled]]))
+                                                   user-disabled
+                                                   user-admin]]))
 
 
 (defroutes api-routes
@@ -21,6 +22,7 @@
   (POST "/api/user/:id" [id] (user-update id))
   (GET "/api/user/:id" [id] (user-read id))
   (PUT "/api/user/:id/disabled" [id] (user-disabled id))
+  (PUT "/api/user/:id/admin" [id] (user-admin id))
 
   (POST "/api/snippet" [] snippet)
   (PUT "/api/snippet/:id" [id] (snippet id))

@@ -464,4 +464,98 @@
         (should= "Not authorized." (response :body)))))
 
 
+
+(describe "user admin change"
+
+  (before
+   (do (util/reset-db!)
+       (util/populate-users!)))
+
+  (it "should allow an admin user to make another user an admin"
+      (let [old-profile (user/get-profile "usertwo@example.com")
+            request (util/api-json-request!
+                     {:route "/api/user/usertwo@example.com/admin"
+                      :method :put
+                      :body {:admin true}
+                      :headers {:auth_token
+                                util/user-one-token}})
+            response (request :response)
+            response-json (parse-string (response :body) true)
+            new-profile (response-json :userProfile)]
+        (should= 200 (response :status))
+        (should-be map? new-profile)
+        (should= false (old-profile :admin))
+        (should= true (new-profile :admin))))
+
+  (it "should allow an admin user to take admin rights away from another user"
+      (let [old-profile (user/get-profile "usertwo@example.com")
+            request (util/api-json-request!
+                     {:route "/api/user/usertwo@example.com/admin"
+                      :method :put
+                      :body {:admin true}
+                      :headers {:auth_token
+                                util/user-one-token}})
+            response (request :response)
+            response-json (parse-string (response :body) true)
+            new-profile (response-json :userProfile)]
+        (should= 200 (response :status))
+        (should= false (old-profile :admin))
+        (should= true (new-profile :admin))
+        ;; take admin away
+        (let [old-profile (user/get-profile "usertwo@example.com")
+              request (util/api-json-request!
+                       {:route "/api/user/usertwo@example.com/admin"
+                        :method :put
+                        :body {:admin false}
+                        :headers {:auth_token
+                                  util/user-one-token}})
+              response (request :response)
+              response-json (parse-string (response :body) true)
+              new-profile (response-json :userProfile)]
+          (should= 200 (response :status))
+          (should= true (old-profile :admin))
+          (should= false (new-profile :admin)))))
+
+  (it "should not allow a non-admin user to change admin status of another user"
+      (let [request (util/api-json-request!
+                     {:route "/api/user/userone@example.com/admin"
+                      :method :put
+                      :body {:admin false}
+                      :headers {:auth_token
+                                util/user-two-token}})
+            response (request :response)
+            profile (user/get-profile "userone@example.com")]
+        (should= 401 (response :status))
+        (should= "Not authorized." (response :body))
+        (should= true (profile :admin))))
+
+  (it "should not allow the root admin user to be changed"
+      (do
+        (user/create-admin! "admin"
+                            "password"
+                            "Admin")
+        (let [request (util/api-json-request!
+                       {:route "/api/user/admin/admin"
+                        :method :put
+                        :body {:admin false}
+                        :headers {:auth_token
+                                  util/user-one-token}})
+              response (request :response)
+              profile (user/get-profile "admin")]
+          (should= 409 (response :status))
+          (should= "Conflict." (response :body))
+          (should= true (profile :admin)))))
+
+  (it "should not allow anything without an auth token"
+      (let [request (util/api-json-request!
+                      {:route "/api/user/usertwo@example.com/admin"
+                       :method :put
+                       :body {:admin true}})
+            response (request :response)]
+        (should= 401 (response :status))
+        (should-be string? (response :body))
+        (should= "Not authorized." (response :body)))))
+
+
+
 (run-specs)

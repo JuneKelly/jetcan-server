@@ -41,7 +41,13 @@ SELECT id, name, created, admin, disabled
 FROM user_account
 
 
---name: -update-user-disabled-status!
+-- name: -update-user-disabled-status!
 UPDATE user_account
 SET disabled = :disabled
+WHERE id = :id
+
+
+-- name: -update-user-admin-status!
+UPDATE user_account
+SET admin = :admin
 WHERE id = :id

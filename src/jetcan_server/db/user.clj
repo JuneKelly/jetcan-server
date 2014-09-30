@@ -89,3 +89,13 @@
                                        user-id)
         (get-profile user-id))
     nil))
+
+
+(defn update-user-admin-status! [user-id new-status]
+  (if (exists? user-id)
+    (do
+      (-update-user-admin-status! db-spec
+                                  new-status
+                                  user-id)
+      (get-profile user-id))
+    nil))
