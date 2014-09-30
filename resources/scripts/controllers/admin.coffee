@@ -5,12 +5,13 @@ angular.module('jetcanApp')
       $scope.Notifications = Notifications
 
       Auth.mustBeLoggedIn()
+      Auth.mustBeAdmin()
 
       # State
 
       # Functions
       init = () ->
-        console.log "admin"
+        console.log "Admin Panel"
 
       # load page
       init()
