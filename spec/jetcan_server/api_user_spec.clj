@@ -373,6 +373,7 @@
         (should-not= "application/json;charset=UTF-8"
                      (get (:headers response) "Content-Type")))))
 
+
 (describe "user disable"
 
   (before
