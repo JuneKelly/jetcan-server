@@ -53,6 +53,13 @@ angular.module('jetcanApp', [
             templateUrl: 'static/views/dashboard.html'
             controller: 'DashboardCtrl'
 
+      .state 'app.admin',
+        url: '/admin'
+        views:
+          'container@':
+            templateUrl: 'static/views/admin.html'
+            controller: 'AdminCtrl'
+
 
     $urlRouterProvider
       .otherwise('/')
